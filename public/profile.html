@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile · Social MVP</title>
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Social MVP</div>
+      <nav class="nav">
+        <a href="/feed">Feed</a>
+        <a href="/profile" class="active">Profile</a>
+        <button id="logoutBtn" class="button ghost">Logout</button>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="card">
+        <h2>Account</h2>
+        <form id="userForm" class="stack">
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+          <button type="submit" class="button">Update email</button>
+          <p class="form-message" id="userMessage"></p>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Profile</h2>
+        <div class="profile-preview" id="profilePreview"></div>
+        <form id="profileForm" class="stack">
+          <label>
+            Display name
+            <input type="text" name="displayName" required />
+          </label>
+          <label>
+            Bio
+            <textarea name="bio" rows="3" placeholder="Tell something about you"></textarea>
+          </label>
+          <label>
+            Avatar
+            <input type="file" name="avatar" accept="image/*" />
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" name="showEmail" />
+            Show email on profile
+          </label>
+          <button type="submit" class="button primary">Update profile</button>
+          <p class="form-message" id="profileMessage"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/assets/app.js"></script>
+    <script src="/assets/profile.js"></script>
+  </body>
+</html>
