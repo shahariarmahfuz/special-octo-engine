@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
+import type { StringValue } from "ms";
 import { nanoid } from "nanoid";
 import path from "path";
-import env from "../../config";
 import { readJson, updateJson } from "../../lib/fileStore";
 import { HttpError } from "../../lib/errorHandler";
 
@@ -29,7 +29,21 @@ export interface Profile {
 const usersFile = path.resolve("src/storage/data/users.json");
 const profilesFile = path.resolve("src/storage/data/profiles.json");
 
-export async function createUser(input: { username: string; email: string; password: string; displayName: string }): Promise<{ user: User; token: string }> {
+// Only one env needed: JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is missing. Set it in Render Environment Variables.");
+}
+
+// No other env needed: fixed TTL (change if you want)
+const TOKEN_TTL: StringValue = "7d";
+
+export async function createUser(input: {
+  username: string;
+  email: string;
+  password: string;
+  displayName: string;
+}): Promise<{ user: User; token: string }> {
   const users = await readJson<User[]>(usersFile, []);
   if (users.some((u) => u.username === input.username || u.email === input.email)) {
     throw new HttpError(400, "User already exists");
@@ -57,25 +71,32 @@ export async function createUser(input: { username: string; email: string; passw
 
   await updateJson<Profile[]>(profilesFile, [], (current) => [...current, profile]);
 
-  const signOptions: SignOptions = { expiresIn: env.tokenTtl };
-  const jwtSecret: Secret = env.jwtSecret;
+  const signOptions: SignOptions = { expiresIn: TOKEN_TTL };
+  const jwtSecret: Secret = JWT_SECRET;
   const token = jwt.sign({ userId: user.id, username: user.username }, jwtSecret, signOptions);
+
   return { user, token };
 }
 
-export async function authenticateUser(input: { identifier: string; password: string }): Promise<{ user: User; token: string }> {
+export async function authenticateUser(input: {
+  identifier: string;
+  password: string;
+}): Promise<{ user: User; token: string }> {
   const users = await readJson<User[]>(usersFile, []);
   const user = users.find((u) => u.username === input.identifier || u.email === input.identifier);
   if (!user) {
     throw new HttpError(401, "Invalid credentials");
   }
+
   const matches = await bcrypt.compare(input.password, user.passwordHash);
   if (!matches) {
     throw new HttpError(401, "Invalid credentials");
   }
-  const signOptions: SignOptions = { expiresIn: env.tokenTtl };
-  const jwtSecret: Secret = env.jwtSecret;
+
+  const signOptions: SignOptions = { expiresIn: TOKEN_TTL };
+  const jwtSecret: Secret = JWT_SECRET;
   const token = jwt.sign({ userId: user.id, username: user.username }, jwtSecret, signOptions);
+
   return { user, token };
 }
 
