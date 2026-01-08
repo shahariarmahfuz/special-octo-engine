@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in · Social MVP</title>
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body class="auth-page">
+    <main class="shell">
+      <section class="card auth-card">
+        <div class="card-header">
+          <h1>Social MVP</h1>
+          <p>Sign in or create an account to continue.</p>
+        </div>
+        <div class="grid">
+          <form id="loginForm" class="stack">
+            <h2>Login</h2>
+            <label>
+              Username or Email
+              <input type="text" name="identifier" required placeholder="username or email" />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" required placeholder="••••••" />
+            </label>
+            <button type="submit" class="button primary">Login</button>
+            <p class="form-message" id="loginMessage"></p>
+          </form>
+
+          <form id="signupForm" class="stack">
+            <h2>Sign up</h2>
+            <label>
+              Display Name
+              <input type="text" name="displayName" required placeholder="Your name" />
+            </label>
+            <label>
+              Username
+              <input type="text" name="username" required placeholder="username" />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" required placeholder="you@example.com" />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" required placeholder="At least 6 characters" />
+            </label>
+            <button type="submit" class="button">Create account</button>
+            <p class="form-message" id="signupMessage"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script src="/assets/app.js"></script>
+    <script src="/assets/auth.js"></script>
+  </body>
+</html>

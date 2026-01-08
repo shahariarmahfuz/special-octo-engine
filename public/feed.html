@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feed · Social MVP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Social MVP</div>
+      <nav class="nav">
+        <a href="/feed" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="/photos"><i class="fa-regular fa-image"></i><span>Photos</span></a>
+        <a href="/videos"><i class="fa-solid fa-video"></i><span>Videos</span></a>
+        <a href="/messages"><i class="fa-regular fa-envelope"></i><span>Messages</span></a>
+        <a href="/chat"><i class="fa-regular fa-comments"></i><span>Chat</span></a>
+        <a href="/profile"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+        <button id="logoutBtn" class="button ghost">Logout</button>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="card">
+        <h2>Create post</h2>
+        <form id="postForm" class="stack">
+          <textarea name="text" rows="3" placeholder="What's on your mind?" required></textarea>
+          <input type="file" name="media" accept="image/*,video/*" />
+          <button type="submit" class="button primary">Post</button>
+          <p class="form-message" id="postMessage"></p>
+        </form>
+      </section>
+
+      <section class="stack" id="feedList">
+        <div class="loading">Loading feed...</div>
+      </section>
+    </main>
+
+    <script src="/assets/app.js"></script>
+    <script src="/assets/feed.js"></script>
+  </body>
+</html>

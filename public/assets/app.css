@@ -1,0 +1,308 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background: #f6f7fb;
+  color: #111827;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #f6f7fb;
+  color: #111827;
+}
+
+.shell {
+  width: min(1100px, 92vw);
+  margin: 32px auto 80px;
+  display: grid;
+  gap: 24px;
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 5vw;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #374151;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav a.active,
+.nav a:hover {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.button {
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #111827;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button.primary {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+.button.ghost {
+  background: transparent;
+}
+
+.button.small {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.form-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.post-card {
+  display: grid;
+  gap: 12px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.post-media {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.post-media img,
+.post-media video {
+  width: 100%;
+  display: block;
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.comment-list {
+  display: grid;
+  gap: 8px;
+}
+
+.comment {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.chat-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .chat-layout {
+    grid-template-columns: 260px 1fr;
+  }
+}
+
+.chat-list {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.chat-item.active {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.chat-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.chat-header {
+  font-weight: 600;
+}
+
+.chat-messages {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 220px;
+  max-height: 420px;
+  overflow-y: auto;
+  display: grid;
+  gap: 10px;
+  background: #fff;
+}
+
+.chat-bubble {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f3f4f6;
+}
+
+.chat-bubble.me {
+  background: #dbeafe;
+  justify-self: end;
+}
+
+.chat-form {
+  display: grid;
+  gap: 10px;
+}
+
+.chip-group {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.post-comments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: min(960px, 92vw);
+}
+
+.profile-preview {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #6b7280;
+}
+
+.profile-preview img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

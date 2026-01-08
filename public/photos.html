@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photos · Social MVP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Social MVP</div>
+      <nav class="nav">
+        <a href="/feed"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="/photos" class="active"><i class="fa-regular fa-image"></i><span>Photos</span></a>
+        <a href="/videos"><i class="fa-solid fa-video"></i><span>Videos</span></a>
+        <a href="/messages"><i class="fa-regular fa-envelope"></i><span>Messages</span></a>
+        <a href="/chat"><i class="fa-regular fa-comments"></i><span>Chat</span></a>
+        <a href="/profile"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+        <button id="logoutBtn" class="button ghost">Logout</button>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="stack" id="mediaList" data-media="image">
+        <div class="loading">Loading photos...</div>
+      </section>
+    </main>
+
+    <script src="/assets/app.js"></script>
+    <script src="/assets/media.js"></script>
+  </body>
+</html>
