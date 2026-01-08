@@ -4,6 +4,7 @@ bindLogout();
 const feedList = document.getElementById("feedList");
 const postForm = document.getElementById("postForm");
 const postMessage = document.getElementById("postMessage");
+const userCache = new Map();
 
 async function loadFeed() {
   feedList.innerHTML = "<div class=\"loading\">Loading feed...</div>";
@@ -16,10 +17,21 @@ async function loadFeed() {
     }
     feedList.innerHTML = "";
     for (const post of items) {
+      const author = await getAuthor(post.authorId);
       const engagement = await loadEngagement(post.id);
       const card = document.createElement("article");
       card.className = "card post-card";
+      const authorName = author?.profile?.displayName || "Unknown";
+      const authorUsername = author?.profile?.username || "unknown";
+      const authorAvatar = author?.profile?.avatarUrl;
+      const authorMarkup = authorAvatar
+        ? `<div class="avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
+        : `<div class="avatar">${authorName.charAt(0).toUpperCase()}</div>`;
       card.innerHTML = `
+        <a class="post-author" href="/u/${authorUsername}">
+          ${authorMarkup}
+          <span>${authorName}</span>
+        </a>
         <div class="post-meta">
           <span>Post ID: ${post.id}</span>
           <span>${new Date(post.createdAt).toLocaleString()}</span>
@@ -128,6 +140,19 @@ async function loadEngagement(postId) {
     return { likes: likes.data.count || 0, comments: (comments.data || []).length };
   } catch (error) {
     return { likes: 0, comments: 0 };
+  }
+}
+
+async function getAuthor(authorId) {
+  if (userCache.has(authorId)) {
+    return userCache.get(authorId);
+  }
+  try {
+    const response = await apiFetch(`/users/${authorId}`);
+    userCache.set(authorId, response.data);
+    return response.data;
+  } catch (error) {
+    return null;
   }
 }
 

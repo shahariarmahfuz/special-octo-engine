@@ -11,6 +11,8 @@ const io = new Server(server, {
   cors: { origin: env.corsOrigin, credentials: true }
 });
 
+app.set("io", io);
+
 io.use(verifySocketAuth);
 
 io.on("connection", (socket) => {

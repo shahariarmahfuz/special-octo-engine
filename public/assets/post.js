@@ -12,6 +12,7 @@ const topBtn = document.getElementById("topComments");
 const postId = window.location.pathname.split("/").pop();
 let commentLimit = 10;
 let sortMode = "latest";
+const userCache = new Map();
 
 async function loadPost() {
   if (!postId || !postCard) {
@@ -20,7 +21,18 @@ async function loadPost() {
   try {
     const response = await apiFetch(`/posts/${postId}`);
     const post = response.data;
+    const author = await getAuthor(post.authorId);
+    const authorName = author?.profile?.displayName || "Unknown";
+    const authorUsername = author?.profile?.username || "unknown";
+    const authorAvatar = author?.profile?.avatarUrl;
+    const authorMarkup = authorAvatar
+      ? `<div class="avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
+      : `<div class="avatar">${authorName.charAt(0).toUpperCase()}</div>`;
     postCard.innerHTML = `
+      <a class="post-author" href="/u/${authorUsername}">
+        ${authorMarkup}
+        <span>${authorName}</span>
+      </a>
       <div class="post-meta">
         <span>Post ID: ${post.id}</span>
         <span>${new Date(post.createdAt).toLocaleString()}</span>
@@ -80,6 +92,19 @@ function renderMedia(post) {
     return `<div class="post-media"><video src="${post.mediaUrl}" controls></video></div>`;
   }
   return `<div class="post-media"><img src="${post.mediaUrl}" alt="post media" /></div>`;
+}
+
+async function getAuthor(authorId) {
+  if (userCache.has(authorId)) {
+    return userCache.get(authorId);
+  }
+  try {
+    const response = await apiFetch(`/users/${authorId}`);
+    userCache.set(authorId, response.data);
+    return response.data;
+  } catch (error) {
+    return null;
+  }
 }
 
 commentForm?.addEventListener("submit", async (event) => {

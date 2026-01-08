@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
+import type { Server } from "socket.io";
 import { authMiddleware, AuthedRequest } from "../../lib/authMiddleware";
 import env from "../../config";
 import { getChatById } from "../chats/chats.service";
@@ -60,6 +61,12 @@ router.post("/:id/messages", authMiddleware, upload.single("media"), async (req:
       mediaUrl,
       mediaType
     });
+    const io = req.app.get("io") as Server | undefined;
+    if (io) {
+      chat.participantIds.forEach((participantId) => {
+        io.to(`user:${participantId}`).emit("dm:message:new", message);
+      });
+    }
     res.status(201).json({ success: true, data: message });
   } catch (error) {
     next(error);

@@ -18,6 +18,7 @@ async function loadProfile() {
         <div>@${profile.username}</div>
         <div>${profile.bio || "No bio yet."}</div>
       </div>
+      <a class="button" href="/messages?user=${profile.username}">Message</a>
     `;
   } catch (error) {
     profileCard.innerHTML = `<div class="form-message">${error.message}</div>`;

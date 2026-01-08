@@ -31,3 +31,14 @@ export async function updateUser(userId: string, updates: { email?: string }): P
   await updateJson<User[]>(usersFile, [], (current) => current.map((u) => (u.id === userId ? updatedUser : u)));
   return updatedUser;
 }
+
+export async function getUserProfileById(userId: string): Promise<{ user: User; profile: Profile }> {
+  const users = await readJson<User[]>(usersFile, []);
+  const profiles = await readJson<Profile[]>(profilesFile, []);
+  const user = users.find((u) => u.id === userId);
+  const profile = profiles.find((p) => p.userId === userId);
+  if (!user || !profile) {
+    throw new HttpError(404, "User not found");
+  }
+  return { user, profile };
+}

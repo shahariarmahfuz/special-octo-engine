@@ -10,6 +10,16 @@ const messageForm = document.getElementById("messageForm");
 const messageMessage = document.getElementById("messageMessage");
 
 let activeChatId = null;
+const socket = io({
+  auth: { token: getToken() }
+});
+const queryUser = new URLSearchParams(window.location.search).get("user");
+
+socket.on("dm:message:new", (message) => {
+  if (message.chatId === activeChatId) {
+    appendMessage(message);
+  }
+});
 
 async function loadChats() {
   try {
@@ -29,6 +39,7 @@ async function loadChats() {
         item.classList.add("active");
         activeChatId = chat.id;
         chatHeader.textContent = `Chat ${chat.id}`;
+        socket.emit("dm:join", { chatId: chat.id });
         await loadMessages(chat.id);
       });
       chatList.appendChild(item);
@@ -47,14 +58,7 @@ async function loadMessages(chatId) {
     const messages = response.data || [];
     chatMessages.innerHTML = "";
     messages.forEach((message) => {
-      const bubble = document.createElement("div");
-      bubble.className = "chat-bubble";
-      bubble.innerHTML = `
-        <div>${message.text || ""}</div>
-        ${message.mediaUrl ? renderMedia(message) : ""}
-        <div class="post-meta">${new Date(message.createdAt).toLocaleString()}</div>
-      `;
-      chatMessages.appendChild(bubble);
+      appendMessage(message);
     });
     chatMessages.scrollTop = chatMessages.scrollHeight;
   } catch (error) {
@@ -69,6 +73,17 @@ function renderMedia(message) {
   return `<div class="post-media"><img src="${message.mediaUrl}" alt="media" /></div>`;
 }
 
+function appendMessage(message) {
+  const bubble = document.createElement("div");
+  bubble.className = "chat-bubble";
+  bubble.innerHTML = `
+    <div>${message.text || ""}</div>
+    ${message.mediaUrl ? renderMedia(message) : ""}
+    <div class="post-meta">${new Date(message.createdAt).toLocaleString()}</div>
+  `;
+  chatMessages.appendChild(bubble);
+}
+
 dmForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   dmMessage.textContent = "";
@@ -81,6 +96,7 @@ dmForm?.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
     activeChatId = response.data.id;
+    socket.emit("dm:join", { chatId: activeChatId });
     await loadChats();
     await loadMessages(activeChatId);
   } catch (error) {
@@ -97,15 +113,32 @@ messageForm?.addEventListener("submit", async (event) => {
   messageMessage.textContent = "";
   const formData = new FormData(messageForm);
   try {
-    await apiFetch(`/chats/${activeChatId}/messages`, {
-      method: "POST",
-      body: formData
+    const text = formData.get("text");
+    const media = formData.get("media");
+    if (media && media instanceof File && media.size > 0) {
+      await apiFetch(`/chats/${activeChatId}/messages`, {
+        method: "POST",
+        body: formData
+      });
+      messageForm.reset();
+      await loadMessages(activeChatId);
+      return;
+    }
+    socket.emit("dm:message", { chatId: activeChatId, text: String(text || "") }, (response) => {
+      if (!response?.success) {
+        messageMessage.textContent = response?.message || "Message failed";
+        return;
+      }
+      messageForm.reset();
     });
-    messageForm.reset();
-    await loadMessages(activeChatId);
   } catch (error) {
     messageMessage.textContent = error.message;
   }
 });
 
 loadChats();
+
+if (queryUser && dmForm) {
+  dmForm.username.value = queryUser;
+  dmForm.requestSubmit();
+}
