@@ -290,11 +290,32 @@ textarea {
   padding: 10px 12px;
   border-radius: 12px;
   background: #f3f4f6;
+  max-width: 78%;
+  display: grid;
+  gap: 6px;
 }
 
 .chat-bubble.me {
   background: #dbeafe;
   justify-self: end;
+}
+
+.chat-bubble.you {
+  justify-self: start;
+}
+
+.chat-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.chat-author .avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
 }
 
 .chat-form {
