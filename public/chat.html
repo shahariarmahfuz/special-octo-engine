@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Messenger | Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body class="chat-page">
+    <header class="chat-header-bar">
+      <div class="header-left">
+        <a class="icon-btn back-btn" href="/messages" aria-label="Back">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <button class="profile-info" id="chatProfile" type="button">
+          <span class="avatar-small" id="chatAvatar">FR</span>
+          <span class="name-col">
+            <span class="chat-name" id="chatName">Select a chat</span>
+            <span class="chat-status" id="chatStatus">Active now</span>
+          </span>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" aria-label="Call"><i class="fa-solid fa-phone"></i></button>
+        <button class="icon-btn" aria-label="Video"><i class="fa-solid fa-video"></i></button>
+        <button class="icon-btn" aria-label="Info"><i class="fa-solid fa-circle-info"></i></button>
+      </div>
+    </header>
+
+    <main class="chat-thread" id="chatThread">
+      <div class="profile-hero" id="chatHero">
+        <div class="avatar-hero" id="chatHeroAvatar">FR</div>
+        <h2 id="chatHeroName">Select a chat</h2>
+        <p id="chatHeroSubtitle">Start a conversation to see messages here.</p>
+        <a class="hero-btn" id="chatHeroLink" href="/feed">View Profile</a>
+      </div>
+    </main>
+
+    <footer class="chat-input" id="chatInput">
+      <div class="input-actions">
+        <label class="icon-btn" aria-label="Attach">
+          <i class="fa-solid fa-circle-plus"></i>
+          <input type="file" id="chatMedia" hidden accept="image/*,video/*" />
+        </label>
+        <button class="icon-btn" type="button" aria-label="Camera"><i class="fa-solid fa-camera"></i></button>
+        <button class="icon-btn" type="button" aria-label="Photo"><i class="fa-solid fa-image"></i></button>
+        <button class="icon-btn" type="button" aria-label="Voice"><i class="fa-solid fa-microphone"></i></button>
+      </div>
+      <div class="input-wrapper">
+        <textarea id="chatText" rows="1" placeholder="Message"></textarea>
+      </div>
+      <button class="send-btn" id="sendBtn" aria-label="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+      <button class="like-btn" id="likeBtn" aria-label="Like">
+        <i class="fa-solid fa-thumbs-up"></i>
+      </button>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/app.js"></script>
+    <script src="/assets/chat.js"></script>
+  </body>
+</html>

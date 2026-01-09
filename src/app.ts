@@ -50,7 +50,7 @@ app.get("/messages", (_req, res) => {
 });
 
 app.get("/chat", (_req, res) => {
-  res.sendFile(path.join(publicDir, "messages.html"));
+  res.sendFile(path.join(publicDir, "chat.html"));
 });
 
 app.get("/photos", (_req, res) => {
