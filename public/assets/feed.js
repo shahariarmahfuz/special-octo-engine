@@ -2,9 +2,23 @@ ensureAuth();
 bindLogout();
 
 const feedList = document.getElementById("feedList");
-const postForm = document.getElementById("postForm");
-const postMessage = document.getElementById("postMessage");
+const meAvatar = document.getElementById("meAvatar");
 const userCache = new Map();
+
+async function loadMe() {
+  try {
+    const response = await apiFetch("/users/me");
+    const profile = response.data.profile;
+    const name = profile.displayName || "ME";
+    if (profile.avatarUrl) {
+      meAvatar.innerHTML = `<img src="${profile.avatarUrl}" alt="${name}" />`;
+      return;
+    }
+    meAvatar.textContent = name.charAt(0).toUpperCase();
+  } catch (error) {
+    meAvatar.textContent = "ME";
+  }
+}
 
 async function loadFeed() {
   feedList.innerHTML = "<div class=\"loading\">Loading feed...</div>";
@@ -12,7 +26,7 @@ async function loadFeed() {
     const response = await apiFetch("/feed");
     const items = response.data.items || [];
     if (!items.length) {
-      feedList.innerHTML = "<div class=\"card\">No posts yet. Create the first one!</div>";
+      feedList.innerHTML = "<div class=\"notice\">No posts yet. Create the first one!</div>";
       return;
     }
     feedList.innerHTML = "";
@@ -20,51 +34,70 @@ async function loadFeed() {
       const author = await getAuthor(post.authorId);
       const engagement = await loadEngagement(post.id);
       const card = document.createElement("article");
-      card.className = "card post-card";
+      card.className = "post";
       const authorName = author?.profile?.displayName || "Unknown";
       const authorUsername = author?.profile?.username || "unknown";
       const authorAvatar = author?.profile?.avatarUrl;
       const authorMarkup = authorAvatar
-        ? `<div class="avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
-        : `<div class="avatar">${authorName.charAt(0).toUpperCase()}</div>`;
+        ? `<div class="post-avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
+        : `<div class="post-avatar">${authorName.charAt(0).toUpperCase()}</div>`;
+
       card.innerHTML = `
-        <a class="post-author" href="/u/${authorUsername}">
-          ${authorMarkup}
-          <span>${authorName}</span>
-        </a>
-        <div class="post-meta">
-          <span>Post ID: ${post.id}</span>
-          <span>${new Date(post.createdAt).toLocaleString()}</span>
+        <div class="post-header">
+          <a class="post-user" href="/u/${authorUsername}">
+            ${authorMarkup}
+            <div class="meta">
+              <div class="name">${authorName}</div>
+              <div class="sub">
+                <span>${new Date(post.createdAt).toLocaleString()}</span>
+                <span>•</span>
+                <i class="fa-solid fa-earth-americas"></i>
+                <span>Public</span>
+              </div>
+            </div>
+          </a>
+          <a class="post-more-btn" href="/post/${post.id}" aria-label="Open post">
+            <i class="fa-solid fa-ellipsis"></i>
+          </a>
         </div>
-        <p>${post.text || "(no text)"}</p>
+        <div class="post-text">${post.text || ""}</div>
         ${post.mediaUrl ? renderMedia(post) : ""}
-        <div class="post-meta">
-          <span>${engagement.likes} likes · ${engagement.comments} comments</span>
-          <a class="button small" href="/post/${post.id}">Open</a>
+        <div class="post-stats">
+          <div class="likes">
+            <div class="like-badge"><i class="fa-solid fa-thumbs-up"></i></div>
+            <span>${engagement.likes}</span>
+          </div>
+          <div>
+            <span>${engagement.comments} comments</span>
+          </div>
         </div>
         <div class="post-actions">
-          <button class="button small" data-like>Like</button>
-          <button class="button small" data-comment>Comment</button>
-          <button class="button small" data-share>Share</button>
+          <button class="act like" type="button" data-like>
+            <i class="fa-regular fa-thumbs-up"></i> Like
+          </button>
+          <button class="act" type="button" data-comment>
+            <i class="fa-regular fa-comment-dots"></i> Comment
+          </button>
+          <button class="act" type="button" data-share>
+            <i class="fa-solid fa-share-from-square"></i> Share
+          </button>
         </div>
-        <div class="comment-list" data-comments></div>
       `;
 
       const likeBtn = card.querySelector("[data-like]");
       const commentBtn = card.querySelector("[data-comment]");
       const shareBtn = card.querySelector("[data-share]");
-      const commentsContainer = card.querySelector("[data-comments]");
 
       likeBtn.addEventListener("click", async () => {
         try {
-          if (likeBtn.dataset.liked === "true") {
+          if (likeBtn.classList.contains("active")) {
             await apiFetch(`/posts/${post.id}/like`, { method: "DELETE" });
-            likeBtn.textContent = "Like";
-            likeBtn.dataset.liked = "false";
+            likeBtn.classList.remove("active");
+            likeBtn.querySelector("i").className = "fa-regular fa-thumbs-up";
           } else {
             await apiFetch(`/posts/${post.id}/like`, { method: "POST" });
-            likeBtn.textContent = "Unlike";
-            likeBtn.dataset.liked = "true";
+            likeBtn.classList.add("active");
+            likeBtn.querySelector("i").className = "fa-solid fa-thumbs-up";
           }
           await loadFeed();
         } catch (error) {
@@ -72,21 +105,8 @@ async function loadFeed() {
         }
       });
 
-      commentBtn.addEventListener("click", async () => {
-        const text = prompt("Write a comment");
-        if (!text) {
-          return;
-        }
-        try {
-          await apiFetch(`/posts/${post.id}/comments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text })
-          });
-          await loadComments(post.id, commentsContainer, 3);
-        } catch (error) {
-          alert(error.message);
-        }
+      commentBtn.addEventListener("click", () => {
+        window.location.href = `/post/${post.id}`;
       });
 
       shareBtn.addEventListener("click", async () => {
@@ -103,11 +123,10 @@ async function loadFeed() {
         }
       });
 
-      await loadComments(post.id, commentsContainer, 3);
       feedList.appendChild(card);
     }
   } catch (error) {
-    feedList.innerHTML = `<div class="card">${error.message}</div>`;
+    feedList.innerHTML = `<div class="notice">${error.message}</div>`;
   }
 }
 
@@ -116,19 +135,6 @@ function renderMedia(post) {
     return `<div class="post-media"><video src="${post.mediaUrl}" controls></video></div>`;
   }
   return `<div class="post-media"><img src="${post.mediaUrl}" alt="post media" /></div>`;
-}
-
-async function loadComments(postId, container, limit) {
-  try {
-    const response = await apiFetch(`/posts/${postId}/comments`);
-    const comments = response.data || [];
-    const sliced = typeof limit === "number" ? comments.slice(0, limit) : comments;
-    container.innerHTML = sliced
-      .map((comment) => `<div class="comment">${comment.text}</div>`)
-      .join("");
-  } catch (error) {
-    container.innerHTML = "";
-  }
 }
 
 async function loadEngagement(postId) {
@@ -156,20 +162,5 @@ async function getAuthor(authorId) {
   }
 }
 
-postForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  postMessage.textContent = "";
-  const formData = new FormData(postForm);
-  try {
-    await apiFetch("/posts", {
-      method: "POST",
-      body: formData
-    });
-    postForm.reset();
-    await loadFeed();
-  } catch (error) {
-    postMessage.textContent = error.message;
-  }
-});
-
+loadMe();
 loadFeed();

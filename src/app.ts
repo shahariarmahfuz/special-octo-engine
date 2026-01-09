@@ -61,6 +61,14 @@ app.get("/videos", (_req, res) => {
   res.sendFile(path.join(publicDir, "videos.html"));
 });
 
+app.get("/friends", (_req, res) => {
+  res.sendFile(path.join(publicDir, "friends.html"));
+});
+
+app.get("/create", (_req, res) => {
+  res.sendFile(path.join(publicDir, "create.html"));
+});
+
 app.get("/post/:id", (_req, res) => {
   res.sendFile(path.join(publicDir, "post.html"));
 });

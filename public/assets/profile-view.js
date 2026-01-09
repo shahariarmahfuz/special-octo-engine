@@ -1,27 +1,30 @@
 ensureAuth();
 bindLogout();
 
-const profileCard = document.getElementById("profileCard");
+const publicProfile = document.getElementById("publicProfile");
+const messageUser = document.getElementById("messageUser");
 const username = window.location.pathname.split("/").pop();
 
 async function loadProfile() {
-  if (!username || !profileCard) {
+  if (!username || !publicProfile) {
     return;
   }
   try {
     const response = await apiFetch(`/profiles/${username}`);
     const profile = response.data;
-    profileCard.innerHTML = `
+    publicProfile.innerHTML = `
       <div class="profile-preview">
         ${profile.avatarUrl ? `<img src="${profile.avatarUrl}" alt="avatar" />` : ""}
         <div><strong>${profile.displayName}</strong></div>
         <div>@${profile.username}</div>
         <div>${profile.bio || "No bio yet."}</div>
       </div>
-      <a class="button" href="/messages?user=${profile.username}">Message</a>
     `;
+    if (messageUser) {
+      messageUser.href = `/messages?user=${profile.username}`;
+    }
   } catch (error) {
-    profileCard.innerHTML = `<div class="form-message">${error.message}</div>`;
+    publicProfile.innerHTML = `<div class="form-message">${error.message}</div>`;
   }
 }
 

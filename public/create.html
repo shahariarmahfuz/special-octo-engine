@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="theme-color" content="#1877f2" />
-    <title>Post | NekoBook</title>
+    <title>Create Post | NekoBook</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -57,28 +57,30 @@
     </header>
 
     <main class="shell">
-      <section class="card" id="postCard">
-        <div class="loading">Loading post...</div>
-      </section>
       <section class="card">
-        <div class="post-comments-header">
-          <h2>Comments</h2>
-          <div class="chip-group">
-            <button class="button small" id="latestComments">Latest</button>
-            <button class="button small" id="topComments">Most liked</button>
-          </div>
+        <div class="card-header">
+          <h1>Create a post</h1>
+          <p>Share your thoughts, photos, or videos.</p>
         </div>
-        <div class="comment-list" id="commentList"></div>
-        <button class="button" id="loadMoreComments">Load more</button>
-        <form id="commentForm" class="stack">
-          <textarea name="text" rows="2" placeholder="Write a comment" required></textarea>
-          <button type="submit" class="button primary">Comment</button>
-          <p class="form-message" id="commentMessage"></p>
+        <form id="createPostForm" class="stack">
+          <label>
+            Text
+            <textarea name="text" rows="4" placeholder="What's on your mind?" required></textarea>
+          </label>
+          <label>
+            Upload photo/video
+            <input type="file" name="media" accept="image/*,video/*" />
+          </label>
+          <div class="stack">
+            <button type="submit" class="button primary">Post</button>
+            <a class="button ghost" href="/feed">Back to feed</a>
+          </div>
+          <p class="form-message" id="createPostMessage"></p>
         </form>
       </section>
     </main>
 
     <script src="/assets/app.js"></script>
-    <script src="/assets/post.js"></script>
+    <script src="/assets/create.js"></script>
   </body>
 </html>

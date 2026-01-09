@@ -25,15 +25,14 @@ async function loadMedia() {
     mediaList.innerHTML = "";
     for (const post of filtered) {
       const card = document.createElement("article");
-      card.className = "card post-card";
+      card.className = "card";
       card.innerHTML = `
-        <div class="post-meta">
-          <span>Post ID: ${post.id}</span>
-          <span>${new Date(post.createdAt).toLocaleString()}</span>
-        </div>
-        <p>${post.text || "(no text)"}</p>
+        <div class="post-text">${post.text || ""}</div>
         ${post.mediaUrl ? renderMedia(post) : ""}
-        <a class="button small" href="/post/${post.id}">Open</a>
+        <div class="post-stats">
+          <span>${new Date(post.createdAt).toLocaleString()}</span>
+          <a class="button small" href="/post/${post.id}">Open</a>
+        </div>
       `;
       mediaList.appendChild(card);
     }

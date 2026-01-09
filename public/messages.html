@@ -1,23 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Messages · Social MVP</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="theme-color" content="#1877f2" />
+    <title>Messages | NekoBook</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="/assets/app.css" />
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">Social MVP</div>
-      <nav class="nav">
-        <a href="/feed"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="/photos"><i class="fa-regular fa-image"></i><span>Photos</span></a>
-        <a href="/videos"><i class="fa-solid fa-video"></i><span>Videos</span></a>
-        <a href="/messages" class="active"><i class="fa-regular fa-envelope"></i><span>Messages</span></a>
-        <a href="/chat"><i class="fa-regular fa-comments"></i><span>Chat</span></a>
-        <a href="/profile"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
-        <button id="logoutBtn" class="button ghost">Logout</button>
+      <div class="container">
+        <div class="topbar-inner">
+          <div class="logo-wrap">
+            <div class="logo-icon">N</div>
+            <div class="logo-text">NekoBook</div>
+          </div>
+          <div class="top-actions">
+            <a class="iconbtn" href="/messages" aria-label="Messenger">
+              <i class="fa-brands fa-facebook-messenger"></i>
+            </a>
+            <a class="iconbtn" href="/chat" aria-label="Chat">
+              <i class="fa-regular fa-comments"></i>
+            </a>
+            <a class="iconbtn" href="/profile" aria-label="Settings">
+              <i class="fa-solid fa-gear"></i>
+            </a>
+            <button class="iconbtn" id="logoutBtn" aria-label="Logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="top-nav" aria-label="Main navigation">
+        <div class="top-nav-inner">
+          <a class="navitem" href="/feed" title="Home">
+            <i class="fa-solid fa-house"></i>
+          </a>
+          <a class="navitem" href="/friends" title="Friends">
+            <i class="fa-solid fa-user-plus"></i>
+          </a>
+          <a class="navitem" href="/photos" title="Photos">
+            <i class="fa-regular fa-image"></i>
+          </a>
+          <a class="navitem" href="/videos" title="Videos">
+            <i class="fa-solid fa-circle-play"></i>
+          </a>
+        </div>
       </nav>
     </header>
 

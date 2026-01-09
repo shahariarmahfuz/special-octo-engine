@@ -26,22 +26,32 @@ async function loadPost() {
     const authorUsername = author?.profile?.username || "unknown";
     const authorAvatar = author?.profile?.avatarUrl;
     const authorMarkup = authorAvatar
-      ? `<div class="avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
-      : `<div class="avatar">${authorName.charAt(0).toUpperCase()}</div>`;
+      ? `<div class="post-avatar"><img src="${authorAvatar}" alt="${authorName}" /></div>`
+      : `<div class="post-avatar">${authorName.charAt(0).toUpperCase()}</div>`;
     postCard.innerHTML = `
-      <a class="post-author" href="/u/${authorUsername}">
-        ${authorMarkup}
-        <span>${authorName}</span>
-      </a>
-      <div class="post-meta">
-        <span>Post ID: ${post.id}</span>
-        <span>${new Date(post.createdAt).toLocaleString()}</span>
+      <div class="post-header">
+        <a class="post-user" href="/u/${authorUsername}">
+          ${authorMarkup}
+          <div class="meta">
+            <div class="name">${authorName}</div>
+            <div class="sub">
+              <span>${new Date(post.createdAt).toLocaleString()}</span>
+              <span>•</span>
+              <i class="fa-solid fa-earth-americas"></i>
+              <span>Public</span>
+            </div>
+          </div>
+        </a>
       </div>
-      <p>${post.text || "(no text)"}</p>
+      <div class="post-text">${post.text || ""}</div>
       ${post.mediaUrl ? renderMedia(post) : ""}
       <div class="post-actions">
-        <button class="button small" id="likeBtn">Like</button>
-        <button class="button small" id="shareBtn">Share</button>
+        <button class="act like" type="button" id="likeBtn">
+          <i class="fa-regular fa-thumbs-up"></i> Like
+        </button>
+        <button class="act" type="button" id="shareBtn">
+          <i class="fa-solid fa-share-from-square"></i> Share
+        </button>
       </div>
     `;
 
