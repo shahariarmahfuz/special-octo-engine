@@ -46,6 +46,9 @@
           <a class="navitem" href="/friends" title="Friends">
             <i class="fa-solid fa-user-plus"></i>
           </a>
+          <a class="navitem active" href="/messages" title="Messages">
+            <i class="fa-brands fa-facebook-messenger"></i>
+          </a>
           <a class="navitem" href="/photos" title="Photos">
             <i class="fa-regular fa-image"></i>
           </a>
@@ -56,9 +59,37 @@
       </nav>
     </header>
 
-    <main class="shell">
+    <main class="container">
+      <section class="messages-wrapper" aria-label="Messages">
+        <header class="messages-header">
+          <div class="mh-left">
+            <a class="back-btn" href="/feed" aria-label="Back">
+              <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="mh-title">Messages</div>
+          </div>
+          <div class="mh-actions">
+            <button class="mh-iconbtn" aria-label="Settings">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <button class="mh-iconbtn" aria-label="Search in messages">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="message-stories" id="friendStories"></div>
+
+        <div class="message-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="friendSearch" type="text" placeholder="Search friends" />
+        </div>
+        <div class="search-results" id="searchResults"></div>
+
+        <ul class="thread-list" id="chatList"></ul>
+      </section>
+
       <section class="card">
-        <h2>Start a chat</h2>
         <form id="dmForm" class="stack">
           <label>
             Username
@@ -70,22 +101,22 @@
       </section>
 
       <section class="card">
-        <h2>Inbox</h2>
-        <div class="chat-layout">
-          <aside class="chat-list" id="chatList"></aside>
-          <div class="chat-panel">
-            <div class="chat-header" id="chatHeader">Select a chat</div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <form id="messageForm" class="chat-form">
-              <input type="text" name="text" placeholder="Type a message" />
-              <input type="file" name="media" accept="image/*,video/*" />
-              <button type="submit" class="button primary">Send</button>
-            </form>
-            <p class="form-message" id="messageMessage"></p>
-          </div>
+        <div class="chat-panel">
+          <div class="chat-header" id="chatHeader">Select a chat</div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <form id="messageForm" class="chat-form">
+            <input type="text" name="text" placeholder="Type a message" />
+            <input type="file" name="media" accept="image/*,video/*" />
+            <button type="submit" class="button primary">Send</button>
+          </form>
+          <p class="form-message" id="messageMessage"></p>
         </div>
       </section>
     </main>
+
+    <button class="fab" aria-label="New message">
+      <i class="fa-solid fa-pen"></i>
+    </button>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/assets/app.js"></script>

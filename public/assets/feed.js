@@ -65,7 +65,7 @@ async function loadFeed() {
         <div class="post-stats">
           <div class="likes">
             <div class="like-badge"><i class="fa-solid fa-thumbs-up"></i></div>
-            <span>${engagement.likes}</span>
+            <span data-like-count>${engagement.likes}</span>
           </div>
           <div>
             <span>${engagement.comments} comments</span>
@@ -85,6 +85,7 @@ async function loadFeed() {
       `;
 
       const likeBtn = card.querySelector("[data-like]");
+      const likeCount = card.querySelector("[data-like-count]");
       const commentBtn = card.querySelector("[data-comment]");
       const shareBtn = card.querySelector("[data-share]");
 
@@ -99,7 +100,10 @@ async function loadFeed() {
             likeBtn.classList.add("active");
             likeBtn.querySelector("i").className = "fa-solid fa-thumbs-up";
           }
-          await loadFeed();
+          if (likeCount) {
+            const current = Number(likeCount.textContent || "0");
+            likeCount.textContent = String(likeBtn.classList.contains("active") ? current + 1 : Math.max(0, current - 1));
+          }
         } catch (error) {
           alert(error.message);
         }

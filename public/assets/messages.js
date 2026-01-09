@@ -8,6 +8,9 @@ const chatHeader = document.getElementById("chatHeader");
 const chatMessages = document.getElementById("chatMessages");
 const messageForm = document.getElementById("messageForm");
 const messageMessage = document.getElementById("messageMessage");
+const friendStories = document.getElementById("friendStories");
+const friendSearch = document.getElementById("friendSearch");
+const searchResults = document.getElementById("searchResults");
 
 let activeChatId = null;
 let currentUserId = null;
@@ -16,6 +19,8 @@ const socket = io({
   auth: { token: getToken() }
 });
 const queryUser = new URLSearchParams(window.location.search).get("user");
+const friendStateKey = "friendState";
+let friendProfiles = [];
 
 socket.on("dm:message:new", async (message) => {
   if (message.chatId === activeChatId) {
@@ -35,18 +40,34 @@ async function loadChats() {
     const chats = response.data || [];
     chatList.innerHTML = "";
     if (!chats.length) {
-      chatList.innerHTML = "<div class=\"chat-item\">No chats yet</div>";
+      chatList.innerHTML = "<li class=\"thread-item\">No chats yet</li>";
       return;
     }
     for (const chat of chats) {
       const otherId = chat.participantIds.find((id) => id !== currentUserId) || chat.participantIds[0];
       const other = await getUser(otherId);
       const label = other?.profile?.displayName || `Chat ${chat.id}`;
-      const item = document.createElement("div");
-      item.className = "chat-item";
-      item.textContent = label;
+      const preview = other?.profile?.username ? `@${other.profile.username}` : "Tap to open";
+      const avatar = renderThreadAvatar(other?.profile, label);
+      const item = document.createElement("li");
+      item.className = "thread-item";
+      item.innerHTML = `
+        <div class="thread-avatar-wrap">
+          ${avatar}
+          <div class="online-dot"></div>
+        </div>
+        <div class="thread-main">
+          <div class="thread-row1">
+            <span class="thread-name">${label}</span>
+            <span class="thread-time">${new Date(chat.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div class="thread-row2">
+            <span class="thread-preview">${preview}</span>
+          </div>
+        </div>
+      `;
       item.addEventListener("click", async () => {
-        document.querySelectorAll(".chat-item").forEach((el) => el.classList.remove("active"));
+        document.querySelectorAll(".thread-item").forEach((el) => el.classList.remove("active"));
         item.classList.add("active");
         activeChatId = chat.id;
         chatHeader.innerHTML = renderChatHeader(other);
@@ -56,7 +77,7 @@ async function loadChats() {
       chatList.appendChild(item);
     }
   } catch (error) {
-    chatList.innerHTML = `<div class=\"form-message\">${error.message}</div>`;
+    chatList.innerHTML = `<li class=\"thread-item\">${error.message}</li>`;
   }
 }
 
@@ -85,6 +106,29 @@ function renderMedia(message) {
   return `<div class=\"post-media\"><img src=\"${message.mediaUrl}\" alt=\"media\" /></div>`;
 }
 
+function renderThreadAvatar(profile, name) {
+  if (profile?.avatarUrl) {
+    return `<div class=\"thread-avatar-photo\"><img src=\"${profile.avatarUrl}\" alt=\"${name}\" /></div>`;
+  }
+  return `<div class=\"thread-avatar-photo\"><div class=\"thread-avatar-inner\">${name.charAt(0).toUpperCase()}</div></div>`;
+}
+
+function renderStory(profile) {
+  const name = profile.displayName || profile.username || "User";
+  const photo = profile.avatarUrl
+    ? `<img src=\"${profile.avatarUrl}\" alt=\"${name}\" />`
+    : `<div class=\"avatar-photo-inner\">${name.charAt(0).toUpperCase()}</div>`;
+  return `
+    <div class="story-avatar">
+      <div class="avatar-wrap">
+        <div class="avatar-photo">${photo}</div>
+        <div class="online-dot"></div>
+      </div>
+      <span>${name}</span>
+    </div>
+  `;
+}
+
 function renderChatHeader(user) {
   if (!user?.profile) {
     return "Select a chat";
@@ -105,10 +149,10 @@ function appendMessage(message, sender) {
     ? `<span class=\"avatar\"><img src=\"${sender.profile.avatarUrl}\" alt=\"${senderName}\" /></span>`
     : `<span class=\"avatar\">${senderName.charAt(0).toUpperCase()}</span>`;
   bubble.innerHTML = `
-    <div class=\"chat-author\">${senderAvatar}<span>${senderName}</span></div>
+    <div class="chat-author">${senderAvatar}<span>${senderName}</span></div>
     <div>${message.text || ""}</div>
     ${message.mediaUrl ? renderMedia(message) : ""}
-    <div class=\"post-meta\">${new Date(message.createdAt).toLocaleString()}</div>
+    <div class="post-meta">${new Date(message.createdAt).toLocaleString()}</div>
   `;
   chatMessages.appendChild(bubble);
 }
@@ -129,16 +173,87 @@ async function getUser(userId) {
   }
 }
 
-dmForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  dmMessage.textContent = "";
-  const formData = new FormData(dmForm);
-  const payload = Object.fromEntries(formData.entries());
+function loadFriendState() {
+  try {
+    const raw = localStorage.getItem(friendStateKey);
+    return raw ? JSON.parse(raw) : { friends: [] };
+  } catch (error) {
+    return { friends: [] };
+  }
+}
+
+async function loadFriendStories() {
+  if (!friendStories) {
+    return;
+  }
+  const state = loadFriendState();
+  if (!state.friends?.length) {
+    friendStories.innerHTML = "<div class=\"notice\">No friends yet.</div>";
+    return;
+  }
+  friendStories.innerHTML = "";
+  const profiles = [];
+  for (const id of state.friends) {
+    const user = await getUser(id);
+    if (user?.profile) {
+      profiles.push(user.profile);
+      friendStories.insertAdjacentHTML("beforeend", renderStory(user.profile));
+    }
+  }
+  friendProfiles = profiles;
+}
+
+function renderSearchResults(results) {
+  if (!searchResults) {
+    return;
+  }
+  if (!results.length) {
+    searchResults.innerHTML = "";
+    return;
+  }
+  searchResults.innerHTML = results
+    .map((profile) => {
+      const name = profile.displayName || profile.username || "User";
+      const avatar = profile.avatarUrl
+        ? `<div class=\"thread-avatar-photo\"><img src=\"${profile.avatarUrl}\" alt=\"${name}\" /></div>`
+        : `<div class=\"thread-avatar-photo\"><div class=\"thread-avatar-inner\">${name.charAt(0).toUpperCase()}</div></div>`;
+      return `
+        <div class="thread-item" data-username="${profile.username}">
+          <div class="thread-avatar-wrap">
+            ${avatar}
+            <div class="online-dot"></div>
+          </div>
+          <div class="thread-main">
+            <div class="thread-row1">
+              <span class="thread-name">${name}</span>
+            </div>
+            <div class="thread-row2">
+              <span class="thread-preview">@${profile.username}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  searchResults.querySelectorAll(".thread-item").forEach((item) => {
+    item.addEventListener("click", async () => {
+      const username = item.dataset.username;
+      if (username) {
+        await startChatWithUsername(username);
+        searchResults.innerHTML = "";
+        friendSearch.value = "";
+      }
+    });
+  });
+}
+
+async function startChatWithUsername(username) {
   try {
     const response = await apiFetch("/chats/dm", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ username })
     });
     activeChatId = response.data.id;
     socket.emit("dm:join", { chatId: activeChatId });
@@ -147,6 +262,14 @@ dmForm?.addEventListener("submit", async (event) => {
   } catch (error) {
     dmMessage.textContent = error.message;
   }
+}
+
+dmForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  dmMessage.textContent = "";
+  const formData = new FormData(dmForm);
+  const payload = Object.fromEntries(formData.entries());
+  await startChatWithUsername(payload.username);
 });
 
 messageForm?.addEventListener("submit", async (event) => {
@@ -181,9 +304,23 @@ messageForm?.addEventListener("submit", async (event) => {
   }
 });
 
+friendSearch?.addEventListener("input", (event) => {
+  const term = event.target.value.trim().toLowerCase();
+  if (!term) {
+    renderSearchResults([]);
+    return;
+  }
+  const results = friendProfiles.filter((profile) => {
+    const name = `${profile.displayName || ""} ${profile.username || ""}`.toLowerCase();
+    return name.includes(term);
+  });
+  renderSearchResults(results);
+});
+
 async function init() {
   await loadCurrentUser();
   await loadChats();
+  await loadFriendStories();
   if (queryUser && dmForm) {
     dmForm.username.value = queryUser;
     dmForm.requestSubmit();
